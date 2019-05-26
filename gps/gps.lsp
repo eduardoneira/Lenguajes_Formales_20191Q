@@ -88,11 +88,25 @@
 	(mapcar #'contar_elemento (mapcar #'(lambda (x) (list x calles)) (crear_set calles)))
 )
 
+(defun auxiliar_escribir_camino_largo(actual calles_agrupadas)
+	(format t "RECORRER ~D CUADRA(S) POR ~A Y DOBLAR EN ~A.~%" (cadr actual) (car actual) (caadr calles_agrupadas))
+	(escribir_camino_largo (cdr calles_agrupadas))
+)
+
+(defun escribir_camino_largo (calles_agrupadas)
+	(let ((actual (car calles_agrupadas)))
+		(if (eq 1 (length calles_agrupadas))
+			(format t "RECORRER ~D CUADRA(S) POR ~A HASTA LLEGAR A DESTINO." (cadr actual) (car actual))
+			(auxiliar_escribir_camino_largo actual calles_agrupadas)
+		)
+	)
+)
+
 (defun escribir_camino (camino diccionario)
 	( let ((intersecciones (mapcar #'(lambda (x) (id_a_interseccion x diccionario)) camino)))
 		(if (eq 1 (length intersecciones))
-			(print "Ya te encuentras en el destino")
-			(agrupar_por_calle (camino_a_calles (car intersecciones) (cdr intersecciones)))
+			(print "YA TE ENCUENTRAS EN EL DESTINO.")
+			(escribir_camino_largo (agrupar_por_calle (camino_a_calles (car intersecciones) (cdr intersecciones))))
 		) 
 	)
 )
@@ -121,4 +135,4 @@
 (o (Balcarce Belgrano))
 ) )
 
-(print (GPS 'a 'g grafo diccionario))
+(GPS 'a 'g grafo diccionario)
