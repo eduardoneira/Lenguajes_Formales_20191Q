@@ -30,35 +30,30 @@
 	)
 )
 
-(defun breadth (adyacentes final grafo recorrido)
-	(let ((camino (dfs (car adyacentes) final grafo recorrido)))
+( defun caminos (actual final grafo recorrido)
+	(let ((adyacentes (diferencia (aristas actual grafo) recorrido)) (recorrido_actualizado (append recorrido (list actual))))
 		(cond
-			((null adyacentes) nil) 
-			((eq final (car (last camino))) camino)
-			(T (breadth (cdr adyacentes) final grafo recorrido))
+			((eq final (car (last recorrido_actualizado))) recorrido_actualizado)
+			((null adyacentes) nil)
+			(T (mapcar #'(lambda (x) (caminos x final grafo recorrido_actualizado)) adyacentes))
 		)
 	)
 )
 
-( defun dfs (actual final grafo recorrido)
-	(let ((aristas_actual (aristas actual grafo)))
-		(let ((adyacentes (diferencia aristas_actual recorrido)))
-			(cond 
-				((null adyacentes) nil)
-				((pertenece final aristas_actual) (append recorrido (list actual final)))
-				(T (breadth adyacentes final grafo (append recorrido (list actual))))
-			)
-		)
+( defun limpiar_caminos (L)
+	(cond
+		((null L) nil)
+		((not (listp (car L))) (list L))
+		((listp L) (append (limpiar_caminos (car L)) (limpiar_caminos (cdr L))))
 	)
 )
-
 
 (setq grafo '((a (b f)) (b (a c)) (c (b d)) (d (c n e)) (e (d)) (f (g))(g (h)) (h (i l)) (i (m j)) (j (k)) (k (o))(l (b f)) (m (l c)) (n (j m)) (o (e n))))
-(print (dfs 'a 'k grafo '()))
+(print (limpiar_caminos (caminos 'a 'b grafo '())))
 
 #| 
-(setq grafo '((a (b c)) (b (a c d)) (c (a b d)) (d (b c e)) (e (d))))
 (defun GPS (i f grafo dicc &optional (tray (list(list i))))
+(setq grafo '((a (b c)) (b (a c d)) (c (a b d)) (d (b c e)) (e (d))))
 	(dfs i f grafo '())
 )
  |#
