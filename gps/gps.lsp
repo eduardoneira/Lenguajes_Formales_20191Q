@@ -1,4 +1,4 @@
-( defun pertenece (elemento lista)
+(defun pertenece (elemento lista)
 	(cond
 		((null lista) nil)
 		((eq elemento (car lista)) T)
@@ -6,7 +6,7 @@
 	)
 )
 
-( defun aristas (nodo grafo)
+(defun aristas (nodo grafo)
 	(let ((entrada_grafo (car grafo)))
     	(if (eq nodo (car entrada_grafo))
     		(cadr entrada_grafo)
@@ -15,7 +15,7 @@
     )
 )
 
-( defun eliminar (e L)
+(defun eliminar (e L)
 	( cond
 		((null L) nil)
 		((eq e (car L)) (eliminar e (cdr L)))
@@ -23,14 +23,14 @@
 	)
 )
 
-( defun diferencia (A B)
+(defun diferencia (A B)
 	(cond
 		((null B) A)
 		(T (diferencia (eliminar (car B) A) (cdr B)))
 	)
 )
 
-( defun todos_los_caminos (actual final grafo recorrido)
+(defun todos_los_caminos (actual final grafo recorrido)
 	(let ((adyacentes (diferencia (aristas actual grafo) recorrido)) (recorrido_actualizado (append recorrido (list actual))))
 		(cond
 			((eq final (car (last recorrido_actualizado))) recorrido_actualizado)
@@ -40,7 +40,7 @@
 	)
 )
 
-( defun limpiar_caminos (L)
+(defun limpiar_caminos (L)
 	(cond
 		((null L) nil)
 		((not (listp (car L))) (list L))
@@ -48,6 +48,9 @@
 	)
 )
 
+(defun elegir_camino (caminos)
+	(reduce #'(lambda (x y) (if (< (length x) (length y)) x y)) caminos)
+)
 
 (defun id_a_interseccion (id diccionario)
 	(if (eq id (caar diccionario))
@@ -74,7 +77,7 @@
 	(reduce #'(lambda (x y) (if (pertenece y x) x (append x (list y)))) (append '(nil) L))
 )
 
-( defun contar (e L)
+(defun contar (e L)
 	(reduce #'+ (mapcar #'(lambda (x) (if (eq x e) 1 0)) L))
 )
 
@@ -112,7 +115,7 @@
 )
 
 (defun GPS (i f grafo dicc &optional (tray (list(list i))))
-	(escribir_camino (car (limpiar_caminos (todos_los_caminos i f grafo '()))) diccionario)
+	(escribir_camino (elegir_camino (limpiar_caminos (todos_los_caminos i f grafo '()))) diccionario)
 )
 
 (setq grafo '((a (b f)) (b (a c)) (c (b d)) (d (c n e)) (e (d)) (f (g))(g (h)) (h (i l)) (i (m j)) (j (k)) (k (o))(l (b f)) (m (l c)) (n (j m)) (o (e n))))
