@@ -30,12 +30,12 @@
 	)
 )
 
-( defun caminos (actual final grafo recorrido)
+( defun todos_los_caminos (actual final grafo recorrido)
 	(let ((adyacentes (diferencia (aristas actual grafo) recorrido)) (recorrido_actualizado (append recorrido (list actual))))
 		(cond
 			((eq final (car (last recorrido_actualizado))) recorrido_actualizado)
 			((null adyacentes) nil)
-			(T (mapcar #'(lambda (x) (caminos x final grafo recorrido_actualizado)) adyacentes))
+			(T (mapcar #'(lambda (x) (todos_los_caminos x final grafo recorrido_actualizado)) adyacentes))
 		)
 	)
 )
@@ -48,12 +48,77 @@
 	)
 )
 
-(setq grafo '((a (b f)) (b (a c)) (c (b d)) (d (c n e)) (e (d)) (f (g))(g (h)) (h (i l)) (i (m j)) (j (k)) (k (o))(l (b f)) (m (l c)) (n (j m)) (o (e n))))
-(print (limpiar_caminos (caminos 'a 'b grafo '())))
 
-#| 
-(defun GPS (i f grafo dicc &optional (tray (list(list i))))
-(setq grafo '((a (b c)) (b (a c d)) (c (a b d)) (d (b c e)) (e (d))))
-	(dfs i f grafo '())
+(defun id_a_interseccion (id diccionario)
+	(if (eq id (caar diccionario))
+		(cadar diccionario)
+		(id_a_interseccion id (cdr diccionario))
+	)
 )
- |#
+
+(defun misma_calle (a b)
+	(if (pertenece (car a) b) 
+		(car a) 
+		(cadr a)
+	)
+)
+
+(defun camino_a_calles (interseccion  intersecciones)
+	(if (null intersecciones) 
+		nil
+		(cons (misma_calle interseccion (car intersecciones)) (camino_a_calles (car intersecciones) (cdr intersecciones)))	
+	)
+)
+
+(defun crear_set (L)
+	(reduce #'(lambda (x y) (if (pertenece y x) x (append x (list y)))) (append '(nil) L))
+)
+
+( defun contar (e L)
+	(reduce #'+ (mapcar #'(lambda (x) (if (eq x e) 1 0)) L))
+)
+
+(defun contar_elemento (x)
+	(let ((e (car x)))
+		(list e (contar e (cadr x)))
+	)
+)
+
+(defun agrupar_por_calle (calles)
+	(mapcar #'contar_elemento (mapcar #'(lambda (x) (list x calles)) (crear_set calles)))
+)
+
+(defun escribir_camino (camino diccionario)
+	( let ((intersecciones (mapcar #'(lambda (x) (id_a_interseccion x diccionario)) camino)))
+		(if (eq 1 (length intersecciones))
+			(print "Ya te encuentras en el destino")
+			(agrupar_por_calle (camino_a_calles (car intersecciones) (cdr intersecciones)))
+		) 
+	)
+)
+
+(defun GPS (i f grafo dicc &optional (tray (list(list i))))
+	(escribir_camino (car (limpiar_caminos (todos_los_caminos i f grafo '()))) diccionario)
+)
+
+(setq grafo '((a (b f)) (b (a c)) (c (b d)) (d (c n e)) (e (d)) (f (g))(g (h)) (h (i l)) (i (m j)) (j (k)) (k (o))(l (b f)) (m (l c)) (n (j m)) (o (e n))))
+
+(setq diccionario '(
+(a (PaseoColon Independencia))
+(b (PaseoColon Chile))
+(c (PaseoColon Mexico ))
+(d (PaseoColon Venezuela))
+(e (PaseoColon Belgrano))
+(f (Independencia Balcarce))
+(g (Independencia Defensa))
+(h (Defensa Chile))
+(i (Defensa Mexico))
+(j (Defensa Venezuela))
+(k (Defensa Belgrano ))
+(l (Balcarce Chile ))
+(m (Balcarce Mexico))
+(n (Balcarce Venezuela))
+(o (Balcarce Belgrano))
+) )
+
+(print (GPS 'a 'g grafo diccionario))
