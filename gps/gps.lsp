@@ -48,8 +48,20 @@
 	)
 )
 
+(defun minima_distancia (caminos)
+	(reduce #'(lambda (x y) (if (< (length x) (length y)) (length x) (length y))) caminos)
+)
+
+(defun seleccionar_caminos_minimos (caminos distancia)
+	(cond 
+		((null caminos) nil)
+		((> (length (car caminos)) distancia) (seleccionar_caminos_minimos (cdr caminos) distancia))
+	)	(T (cons (car caminos) (seleccionar_caminos_minimos (cdr caminos) distancia)))
+)
+
+; TODO: Quedarse con todos los minimos
 (defun elegir_camino (caminos)
-	(reduce #'(lambda (x y) (if (< (length x) (length y)) x y)) caminos)
+	(seleccionar_caminos_minimos caminos (minima_distancia caminos))
 )
 
 (defun id_a_interseccion (id diccionario)
@@ -114,6 +126,7 @@
 	)
 )
 
+;usuario manda intersecciones, no nodos
 (defun GPS (i f grafo dicc &optional (tray (list(list i))))
 	(escribir_camino (elegir_camino (limpiar_caminos (todos_los_caminos i f grafo '()))) diccionario)
 )
