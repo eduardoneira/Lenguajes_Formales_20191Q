@@ -59,7 +59,6 @@
 	)	(T (cons (car caminos) (seleccionar_caminos_minimos (cdr caminos) distancia)))
 )
 
-; TODO: Quedarse con todos los minimos
 (defun elegir_camino (caminos)
 	(seleccionar_caminos_minimos caminos (minima_distancia caminos))
 )
