@@ -114,14 +114,33 @@
 (defun escribir_caminos (caminos diccionario)
 	(cond
 		((null (car caminos)) (format t "NO HAY CAMINOS POSIBLES.")) 
-		((eq 1 (length caminos)) (format t "YA TE ENCUENTRAS EN EL DESTINO."))
+		((eq 1 (length (car caminos))) (format t "YA TE ENCUENTRAS EN EL DESTINO."))
 		(T (format t "HAY ~D CAMINOS POSIBLES.~%" (length caminos)) (mapcar (lambda (x) (formatear_y_escribir_camino x diccionario)) caminos))
 	) 
 )
 
-;TODO: usuario manda intersecciones, no nodos
+(defun misma_interseccion (A B)
+	(cond
+		((eq (car A) (car B)) (eq (cadr A) (cadr B)))
+		((eq (car A) (cadr B)) (eq (cadr A) (car B)))
+		(T nil)
+	)
+)
+
+(defun interseccion_a_nodo (interseccion diccionario)
+	(cond
+		((null diccionario) (format t "LA INTERSECCION ~A NO EXISTE.~%" interseccion) nil)
+		((misma_interseccion interseccion (cadar diccionario)) (caar diccionario))
+		(T (interseccion_a_nodo interseccion (cdr diccionario)))
+	)
+)
+
 (defun GPS (i f grafo dicc &optional (tray (list(list i))))
-	(escribir_caminos (elegir_caminos (todos_los_caminos i f grafo '())) diccionario)
+	(let ((nodo_inicial (interseccion_a_nodo i diccionario)) (nodo_final (interseccion_a_nodo f diccionario)))
+		(if (and (not (null nodo_inicial)) (not (null nodo_final)))
+			(escribir_caminos (elegir_caminos (todos_los_caminos i f grafo '())) diccionario)
+		) 
+	)
 )
 
 (setq grafo '((a (b f)) (b (a c)) (c (b d)) (d (c n e)) (e (d)) (f (g))(g (h)) (h (i l)) (i (m j)) (j (k)) (k (o))(l (b f)) (m (l c)) (n (j m)) (o (e n))))
@@ -129,7 +148,7 @@
 (setq diccionario '(
 (a (PaseoColon Independencia))
 (b (PaseoColon Chile))
-(c (PaseoColon Mexico ))
+(c (PaseoColon Mexico))
 (d (PaseoColon Venezuela))
 (e (PaseoColon Belgrano))
 (f (Independencia Balcarce))
@@ -137,13 +156,12 @@
 (h (Defensa Chile))
 (i (Defensa Mexico))
 (j (Defensa Venezuela))
-(k (Defensa Belgrano ))
-(l (Balcarce Chile ))
+(k (Defensa Belgrano))
+(l (Balcarce Chile))
 (m (Balcarce Mexico))
 (n (Balcarce Venezuela))
 (o (Balcarce Belgrano))
 ) )
 
-(print (todos_los_caminos 'a 'b grafo '()))
-
-#| (GPS 'a 'g grafo diccionario) |#
+; (print (todos_los_caminos 'a 'b grafo '()))
+(GPS '(PaseoColon Independencia) '(Belgrano Balcarce) grafo diccionario)
