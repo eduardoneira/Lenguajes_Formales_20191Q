@@ -53,7 +53,10 @@
 )
 
 (defun elegir_caminos (caminos)
-	(seleccionar_caminos_minimos caminos (minima_distancia caminos))
+	(if (null caminos)
+		nil
+		(seleccionar_caminos_minimos caminos (minima_distancia caminos))
+	)
 )
 
 (defun id_a_interseccion (id diccionario)
@@ -144,7 +147,7 @@
 	)
 )
 
-(setq grafo '((a (b f)) (b (a c)) (c (b d)) (d (c n e)) (e (d)) (f (g))(g (h)) (h (i l)) (i (m j)) (j (k)) (k (o))(l (b f)) (m (l c)) (n (j m)) (o (e n))))
+(setq grafo '((a (b f)) (b (a c)) (c (b d)) (d (c n e)) (e (d)) (f (g))(g (h)) (h (i l)) (i (m j)) (j (k)) (k (o))(l (b f)) (m (l c)) (n (j m)) (o (e n)) (p nil)))
 
 (setq diccionario '(
 (a (PaseoColon Independencia))
@@ -162,7 +165,8 @@
 (m (Balcarce Mexico))
 (n (Balcarce Venezuela))
 (o (Balcarce Belgrano))
+(p (calle falsa))
 ) )
 
-; (print (todos_los_caminos 'a 'b grafo '()))
-(GPS '(PaseoColon Independencia) '(Belgrano Balcarce) grafo diccionario)
+;(print (todos_los_caminos 'a 'p grafo '()))
+(GPS '(PaseoColon Independencia) '(PaseoColon Independencia) grafo diccionario)
