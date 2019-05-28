@@ -41,14 +41,15 @@
 )
 
 (defun minima_distancia (caminos)
-	(reduce (lambda (x y) (if (< (length x) (length y)) (length x) (length y))) caminos)
+	(length (reduce (lambda (x y) (if (< (length x) (length y)) x y)) caminos))
 )
 
 (defun seleccionar_caminos_minimos (caminos distancia)
 	(cond 
 		((null caminos) nil)
 		((> (length (car caminos)) distancia) (seleccionar_caminos_minimos (cdr caminos) distancia))
-	)	(T (cons (car caminos) (seleccionar_caminos_minimos (cdr caminos) distancia)))
+		(T (cons (car caminos) (seleccionar_caminos_minimos (cdr caminos) distancia)))
+	)
 )
 
 (defun elegir_caminos (caminos)
@@ -97,7 +98,7 @@
 (defun escribir_camino (calles_agrupadas)
 	(let ((actual (car calles_agrupadas)))
 		(cond 
-			((eq 1 (length calles_agrupadas)) (format t "RECORRER ~D CUADRA(S) POR ~A HASTA LLEGAR A DESTINO." (cadr actual) (car actual)))
+			((eq 1 (length calles_agrupadas)) (format t "RECORRER ~D CUADRA(S) POR ~A HASTA LLEGAR A DESTINO.~%~%" (cadr actual) (car actual)))
 			(T (format t "RECORRER ~D CUADRA(S) POR ~A Y DOBLAR EN ~A.~%" (cadr actual) (car actual) (caadr calles_agrupadas))
 				(escribir_camino (cdr calles_agrupadas))
 			)
@@ -113,9 +114,9 @@
 
 (defun escribir_caminos (caminos diccionario)
 	(cond
-		((null (car caminos)) (format t "NO HAY CAMINOS POSIBLES.")) 
-		((eq 1 (length (car caminos))) (format t "YA TE ENCUENTRAS EN EL DESTINO."))
-		(T (format t "HAY ~D CAMINOS POSIBLES.~%" (length caminos)) (mapcar (lambda (x) (formatear_y_escribir_camino x diccionario)) caminos))
+		((null (car caminos)) (format t "NO HAY CAMINOS POSIBLES.~%")) 
+		((eq 1 (length (car caminos))) (format t "YA TE ENCUENTRAS EN EL DESTINO.~%"))
+		(T (format t "HAY ~D CAMINOS POSIBLES.~%~%" (length caminos)) (mapcar (lambda (x) (formatear_y_escribir_camino x diccionario)) caminos))
 	) 
 )
 
@@ -138,7 +139,7 @@
 (defun GPS (i f grafo dicc &optional (tray (list(list i))))
 	(let ((nodo_inicial (interseccion_a_nodo i diccionario)) (nodo_final (interseccion_a_nodo f diccionario)))
 		(if (and (not (null nodo_inicial)) (not (null nodo_final)))
-			(escribir_caminos (elegir_caminos (todos_los_caminos i f grafo '())) diccionario)
+			(escribir_caminos (elegir_caminos (todos_los_caminos nodo_inicial nodo_final grafo '())) diccionario)
 		) 
 	)
 )
