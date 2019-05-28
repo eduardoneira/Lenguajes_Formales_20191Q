@@ -99,7 +99,7 @@
 		(cond 
 			((eq 1 (length calles_agrupadas)) (format t "RECORRER ~D CUADRA(S) POR ~A HASTA LLEGAR A DESTINO." (cadr actual) (car actual)))
 			(T (format t "RECORRER ~D CUADRA(S) POR ~A Y DOBLAR EN ~A.~%" (cadr actual) (car actual) (caadr calles_agrupadas))
-				(escribir_camino_largo (cdr calles_agrupadas))
+				(escribir_camino (cdr calles_agrupadas))
 			)
 		)
 	)
@@ -107,7 +107,7 @@
 
 (defun formatear_y_escribir_camino (camino diccionario)
 	(let ((intersecciones (mapcar (lambda (x) (id_a_interseccion x diccionario)) camino)))
-		(escribir_camino_largo (agrupar_por_calle (camino_a_calles (car intersecciones) (cdr intersecciones))))
+		(escribir_camino (agrupar_por_calle (camino_a_calles (car intersecciones) (cdr intersecciones))))
 	)
 )
 
@@ -119,7 +119,7 @@
 	) 
 )
 
-;usuario manda intersecciones, no nodos
+;TODO: usuario manda intersecciones, no nodos
 (defun GPS (i f grafo dicc &optional (tray (list(list i))))
 	(escribir_caminos (elegir_caminos (todos_los_caminos i f grafo '())) diccionario)
 )
