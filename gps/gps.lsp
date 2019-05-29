@@ -81,7 +81,7 @@
 )
 
 (defun crear_set (L)
-	(reduce (lambda (x y) (if (pertenece y x) x (append x (list y)))) (append '(nil) L))
+	(reduce (lambda (x y) (if (pertenece y x) x (append x (list y)))) (cons nil L))
 )
 
 (defun contar (e L)
@@ -133,7 +133,7 @@
 
 (defun interseccion_a_nodo (interseccion diccionario)
 	(cond
-		((null diccionario) (format t "LA INTERSECCION ~A NO EXISTE.~%" interseccion) nil)
+		((null diccionario) (format t "LA INTERSECCION ~A NO EXISTE.~%" interseccion))
 		((misma_interseccion interseccion (cadar diccionario)) (caar diccionario))
 		(T (interseccion_a_nodo interseccion (cdr diccionario)))
 	)
@@ -141,7 +141,8 @@
 
 (defun GPS (i f grafo dicc &optional (tray (list(list i))))
 	(let ((nodo_inicial (interseccion_a_nodo i diccionario)) (nodo_final (interseccion_a_nodo f diccionario)))
-		(if (and (not (null nodo_inicial)) (not (null nodo_final)))
+		(if (or (null nodo_inicial) (null nodo_final))
+			nil
 			(escribir_caminos (elegir_caminos (todos_los_caminos nodo_inicial nodo_final grafo '())) diccionario)
 		) 
 	)
@@ -168,5 +169,4 @@
 (p (calle falsa))
 ) )
 
-;(print (todos_los_caminos 'a 'p grafo '()))
-(GPS '(PaseoColon Independencia) '(PaseoColon Independencia) grafo diccionario)
+(GPS '(PaseoColon Independencia) '(Balcarce Belgrano) grafo diccionario)
