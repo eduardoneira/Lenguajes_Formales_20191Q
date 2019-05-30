@@ -133,7 +133,7 @@
 
 (defun interseccion_a_nodo (interseccion diccionario)
 	(cond
-		((null diccionario) (format t "LA INTERSECCION ~A NO EXISTE.~%" interseccion))
+		((null diccionario) (format t "LA INTERSECCION ENTRE ~A Y ~A NO EXISTE.~%" (car interseccion) (cadr interseccion)))
 		((misma_interseccion interseccion (cadar diccionario)) (caar diccionario))
 		(T (interseccion_a_nodo interseccion (cdr diccionario)))
 	)
@@ -166,7 +166,14 @@
 (m (Balcarce Mexico))
 (n (Balcarce Venezuela))
 (o (Balcarce Belgrano))
-(p (calle falsa))
+(p (calle separada))
 ) )
 
+
 (GPS '(PaseoColon Independencia) '(Balcarce Belgrano) grafo diccionario)
+
+(GPS '(PaseoColon Independencia) '(Independencia PaseoColon) grafo diccionario)
+
+(GPS '(Balcarce Mexico) '(calle separada) grafo diccionario)
+
+(GPS '(Balcarce Mexico) '(calle falsa) grafo diccionario)
