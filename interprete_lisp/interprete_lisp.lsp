@@ -127,5 +127,4 @@
 ;(print (evaluar '(null nil) nil))
 ;(print (evaluar '(length (quote (1 2 3))) nil))
 ;(print (evaluar '(reduce (lambda (x y) (if (> x y) x y)) (quote (4 5 1 2 3))) nil))
-
-(print (evaluar '(reduce 'append (quote ((1 2) (3 4) (5 6)))) nil))
+;(print (evaluar '(reduce 'append (quote ((1 2) (3 4) (5 6)))) nil))
