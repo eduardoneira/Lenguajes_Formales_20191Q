@@ -139,7 +139,7 @@
 	)
 )
 
-(defun GPS (i f grafo dicc &optional (tray (list(list i))))
+(defun GPS (i f grafo dicc)
 	(let ((nodo_inicial (interseccion_a_nodo i diccionario)) (nodo_final (interseccion_a_nodo f diccionario)))
 		(if (or (null nodo_inicial) (null nodo_final))
 			nil
@@ -148,32 +148,32 @@
 	)
 )
 
-(setq grafo '((a (b f)) (b (a c)) (c (b d)) (d (c n e)) (e (d)) (f (g))(g (h)) (h (i l)) (i (m j)) (j (k)) (k (o))(l (b f)) (m (l c)) (n (j m)) (o (e n)) (p nil)))
+; PRUEBAS
+; (setq grafo '((a (b f)) (b (a c)) (c (b d)) (d (c n e)) (e (d)) (f (g))(g (h)) (h (i l)) (i (m j)) (j (k)) (k (o))(l (b f)) (m (l c)) (n (j m)) (o (e n)) (p nil)))
 
-(setq diccionario '(
-(a (PaseoColon Independencia))
-(b (PaseoColon Chile))
-(c (PaseoColon Mexico))
-(d (PaseoColon Venezuela))
-(e (PaseoColon Belgrano))
-(f (Independencia Balcarce))
-(g (Independencia Defensa))
-(h (Defensa Chile))
-(i (Defensa Mexico))
-(j (Defensa Venezuela))
-(k (Defensa Belgrano))
-(l (Balcarce Chile))
-(m (Balcarce Mexico))
-(n (Balcarce Venezuela))
-(o (Balcarce Belgrano))
-(p (calle separada))
-) )
+; (setq diccionario '(
+; (a (PaseoColon Independencia))
+; (b (PaseoColon Chile))
+; (c (PaseoColon Mexico))
+; (d (PaseoColon Venezuela))
+; (e (PaseoColon Belgrano))
+; (f (Independencia Balcarce))
+; (g (Independencia Defensa))
+; (h (Defensa Chile))
+; (i (Defensa Mexico))
+; (j (Defensa Venezuela))
+; (k (Defensa Belgrano))
+; (l (Balcarce Chile))
+; (m (Balcarce Mexico))
+; (n (Balcarce Venezuela))
+; (o (Balcarce Belgrano))
+; (p (calle separada))
+; ) )
 
+; (GPS '(PaseoColon Independencia) '(Balcarce Belgrano) grafo diccionario)
 
-(GPS '(PaseoColon Independencia) '(Balcarce Belgrano) grafo diccionario)
+; (GPS '(PaseoColon Independencia) '(Independencia PaseoColon) grafo diccionario)
 
-(GPS '(PaseoColon Independencia) '(Independencia PaseoColon) grafo diccionario)
+; (GPS '(Balcarce Mexico) '(calle separada) grafo diccionario)
 
-(GPS '(Balcarce Mexico) '(calle separada) grafo diccionario)
-
-(GPS '(Balcarce Mexico) '(calle falsa) grafo diccionario)
+; (GPS '(Balcarce Mexico) '(calle falsa) grafo diccionario)
