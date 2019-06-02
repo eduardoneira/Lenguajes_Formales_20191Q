@@ -38,19 +38,31 @@
 		(cond
 			((eq fn 'car) (caar lae))
 			((eq fn 'cdr) (cdar lae))
+			((eq fn 'nth) (nth (car lae) (cadr lae)))
 			((eq fn 'cons) (cons (car lae) (cadr lae)))
 			((eq fn 'list) lae)
+			((eq fn 'append) (reduce #'append lae))
+			;Reconocedores
+			((eq fn 'atom) (atom (car lae)))
+			((eq fn 'symbolp) (symbolp (car lae)))
+			((eq fn 'numberp) (numberp (car lae)))
+			((eq fn 'listp) (listp (car lae)))
+			((eq fn 'null) (null (car lae)))
+			((eq fn 'length) (length (car lae)))
 			;Relaciones
 			((eq fn 'eq) (eq (car lae) (cadr lae)))
-			((eq fn '<) (eq (car lae) (cadr lae)))
-			((eq fn '>) (eq (car lae) (cadr lae)))
+			((eq fn '<) (< (car lae) (cadr lae)))
+			((eq fn '>) (> (car lae) (cadr lae)))
 			;Aritmeticas
 			((eq fn '+) (+ (car lae) (cadr lae)))
 			((eq fn '-) (- (car lae) (cadr lae)))
 			((eq fn '*) (* (car lae) (cadr lae)))
-			((eq fn '/) (/	 (car lae) (cadr lae)))
+			((eq fn '/) (/ (car lae) (cadr lae)))
+			;Logicas
+			((eq fn 'not) (not (car lae)))
 			;Mapcar y reduce
 			((eq fn 'mapcar) (mapcar (lambda (x) (aplicar (car lae) (list x) amb)) (cadr lae)))
+			((eq fn 'reduce) (reduce (lambda (x y) (aplicar (car lae) (list x y) amb)) (cadr lae)))
 			;Funciones definidas en el ambiente
 			(T (aplicar (buscar fn amb) lae amb))
 		)
@@ -102,3 +114,18 @@
 ;(print (evaluar '(fact 5) '(fact (lambda (n) (if (eq n 0) 1 (* n (fact (- n 1))))))))
 ;(print (evaluar '(mapcar 'fact (quote ( 2 3 4 5 )))
 ;				'(fact (lambda (n) (if (eq n 0) 1 (* n (fact (- n 1))))))))
+;(print (evaluar '(not A) '(A T)))
+;(print (evaluar '(nth 2 A) '(A (1 2 3 4))))
+;(print (evaluar '(append (quote ((1 2) (3 4) (5 6)))) nil))
+;(print (evaluar '(atom 1) nil))
+;(print (evaluar '(atom (quote (1 2 3))) nil))
+;(print (evaluar '(symbolp (quote A)) nil))
+;(print (evaluar '(symbolp 1) nil))
+;(print (evaluar '(numberp 1) nil))
+;(print (evaluar '(listp (quote (1 2 3))) nil))
+;(print (evaluar '(null (quote (1 2 3))) nil))
+;(print (evaluar '(null nil) nil))
+;(print (evaluar '(length (quote (1 2 3))) nil))
+;(print (evaluar '(reduce (lambda (x y) (if (> x y) x y)) (quote (4 5 1 2 3))) nil))
+
+(print (evaluar '(reduce 'append (quote ((1 2) (3 4) (5 6)))) nil))
