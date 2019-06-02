@@ -33,7 +33,6 @@
 	)
 )
 
-;lae -> lista_de_argumentos_evaluados
 (defun aplicar (fn lae amb)
 	(if (atom fn)
 		(cond
@@ -46,10 +45,12 @@
 			((eq fn '-) (- (car lae) (cadr lae)))
 			((eq fn '*) (* (car lae) (cadr lae)))
 			((eq fn '/) (/	 (car lae) (cadr lae)))
-			;más funciones primitivas, al final va funciones definidas en el ambiente
+			;Mapcar y reduce
+			((eq fn 'mapcar) (mapcar (lambda (x) (aplicar (car lae) (list x) amb)) (cadr lae)))
+			;Funciones definidas en el ambiente
 			(T (aplicar (buscar fn amb) lae amb))
 		)
-		;solo puede ser un lambda si es una lista
+		;Si es una lista la fn, entonces es una lambda
 		(evaluar (caddr fn) (ampliar_amb (cadr fn) lae amb))
 	)
 )
@@ -66,7 +67,7 @@
 			((eq (car exp) 'if) (if (null (evaluar (cadr exp) amb)) (evaluar (cadddr exp) amb) (evaluar (caddr exp) amb)))
 			((eq (car exp) 'cond) (if (eq T (evaluar (caadr exp) amb)) (evaluar (cadadr exp) amb) (evaluar (cons 'cond (cddr exp)) amb)))
 			((eq (car exp) 'lambda) exp)
-			; Si vamos a hacer el my_eval de la cabeza hay que agregar al ambiente las funciones primitivas (evaluar (car exp) amb)
+			; Si vamos a hacer el evaluar de la cabeza hay que agregar al ambiente las funciones primitivas (evaluar (car exp) amb)
 			(T (aplicar (car exp) (mapcar (lambda (x) (evaluar x amb)) (cdr exp)) amb))
 		)
 	)
@@ -91,6 +92,8 @@
 ;(print (evaluar '(cdr (list a b c)) '(a 100 b 99 c 98)))
 ;(print (evaluar '((lambda (x) (* x 2)) 2) nil))
 ;(print (evaluar '((lambda (x y) (+ (* x 2) y)) 2 4) nil))
+;(print (evaluar '(lambda (x) (* x 2)) nil))
+;(print (evaluar '(mapcar (lambda (x) (cons x (cdr '(3 4 5)))) '(1 2 3)) nil))
+;(print (evaluar '(mapcar 'car (quote ( (2 3) (4 5 )))) nil))
 
 ;NO PASAN
-(print (evaluar '(lambda (x) (* x 2)) nil))
