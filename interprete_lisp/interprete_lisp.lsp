@@ -40,6 +40,10 @@
 			((eq fn 'cdr) (cdar lae))
 			((eq fn 'cons) (cons (car lae) (cadr lae)))
 			((eq fn 'list) lae)
+			;Relaciones
+			((eq fn 'eq) (eq (car lae) (cadr lae)))
+			((eq fn '<) (eq (car lae) (cadr lae)))
+			((eq fn '>) (eq (car lae) (cadr lae)))
 			;Aritmeticas
 			((eq fn '+) (+ (car lae) (cadr lae)))
 			((eq fn '-) (- (car lae) (cadr lae)))
@@ -95,5 +99,6 @@
 ;(print (evaluar '(lambda (x) (* x 2)) nil))
 ;(print (evaluar '(mapcar (lambda (x) (cons x (cdr '(3 4 5)))) '(1 2 3)) nil))
 ;(print (evaluar '(mapcar 'car (quote ( (2 3) (4 5 )))) nil))
-
-;NO PASAN
+;(print (evaluar '(fact 5) '(fact (lambda (n) (if (eq n 0) 1 (* n (fact (- n 1))))))))
+;(print (evaluar '(mapcar 'fact (quote ( 2 3 4 5 )))
+;				'(fact (lambda (n) (if (eq n 0) 1 (* n (fact (- n 1))))))))
