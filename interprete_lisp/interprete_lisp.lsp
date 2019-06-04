@@ -1,3 +1,10 @@
+(defun trans (L)
+    (if (null (car L))
+        nil
+        (cons (mapcar #'car L) (trans (mapcar #'cdr L)))   
+    )
+)
+
 (defun pertenece (elemento lista)
 	(cond
 		((null lista) nil)
@@ -34,6 +41,7 @@
 )
 
 (defun aplicar (fn lae amb)
+	(print (list fn lae))
 	(if (atom fn)
 		(cond
 			((eq fn 'car) (caar lae))
@@ -60,8 +68,13 @@
 			((eq fn '/) (/ (car lae) (cadr lae)))
 			;Logicas
 			((eq fn 'not) (not (car lae)))
-			;Mapcar y reduce
-			((eq fn 'mapcar) (mapcar (lambda (x) (aplicar (car lae) (list x) amb)) (cadr lae)))
+			;Mapcar, Mapcar n-adico y reduce
+			((eq fn 'mapcar) 
+				(if (eq (length lae) 2)
+					(mapcar (lambda (x) (aplicar (car lae) (list x) amb)) (cadr lae))
+					(mapcar (lambda (x) (aplicar (car lae) x amb)) (trans (cdr lae)))
+				)
+			)
 			((eq fn 'reduce) (reduce (lambda (x y) (aplicar (car lae) (list x y) amb)) (cadr lae)))
 			;Funciones definidas en el ambiente
 			(T (aplicar (buscar fn amb) lae amb))
@@ -127,3 +140,5 @@
 ; (print (evaluar '(reduce 'append (quote ((1 2) (3 4) (5 6)))) nil))
 ; (print (evaluar '(cond ((eq 1 3) nil) ((eq 1 2) nil) ((> 0 1) T)) nil))
 ; (print (evaluar '(cond ((eq 1 3) nil) ((eq 2 2) 2) ((> 2 1) T)) nil))
+; (print (evaluar '(mapcar 'cons '(a b c) '(1 2 3)) nil))
+; (print (evaluar '(mapcar 'list '(a b c) '(1 2 3) '(4 5 6)) nil))
