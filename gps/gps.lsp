@@ -119,7 +119,7 @@
 	(cond
 		((null (car caminos)) (format t "NO HAY CAMINOS POSIBLES.~%")) 
 		((eq 1 (length (car caminos))) (format t "YA TE ENCUENTRAS EN EL DESTINO.~%"))
-		(T (format t "HAY ~D CAMINOS POSIBLES.~%~%" (length caminos)) (mapcar (lambda (x) (formatear_y_escribir_camino x diccionario)) caminos))
+		(T (format t "HAY ~D CAMINOS POSIBLES.~%~%" (length caminos)) (car (mapcar (lambda (x) (formatear_y_escribir_camino x diccionario)) caminos)))
 	) 
 )
 
