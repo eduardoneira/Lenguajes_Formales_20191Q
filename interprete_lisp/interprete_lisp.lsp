@@ -41,7 +41,6 @@
 )
 
 (defun aplicar (fn lae amb)
-	(print (list fn lae))
 	(if (atom fn)
 		(cond
 			((eq fn 'car) (caar lae))
@@ -142,3 +141,4 @@
 ; (print (evaluar '(cond ((eq 1 3) nil) ((eq 2 2) 2) ((> 2 1) T)) nil))
 ; (print (evaluar '(mapcar 'cons '(a b c) '(1 2 3)) nil))
 ; (print (evaluar '(mapcar 'list '(a b c) '(1 2 3) '(4 5 6)) nil))
+; (print (evaluar '(mapcar 'suma '(1 2 3) '(4 5 6)) '(suma (lambda (x y) (+ x y)))))
