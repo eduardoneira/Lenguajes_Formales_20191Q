@@ -1,3 +1,23 @@
+(defun pertenece (elemento lista)
+	(cond
+		((null lista) nil)
+		((eq elemento (car lista)) T)
+		(T (pertenece elemento (cdr lista)))
+	)
+)
+
+(defun es_operador (expr)
+	(pertenece expr '(+ - * / %  && || ! == != <= < > >=))
+)
+
+(defun buscar (var mem)
+	(cond
+		((null mem) 'ERROR_VARIABLE_NO_DECLARADA)
+		((eq var (car mem)) (cadr mem))
+		(T (buscar var (cddr mem)))
+	)
+)
+
 (defun asigvar (asigs mem)
 	(cond
 		((null asigs) nil)
