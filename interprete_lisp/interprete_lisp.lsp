@@ -45,6 +45,7 @@
 		(cond
 			((eq fn 'car) (caar lae))
 			((eq fn 'cdr) (cdar lae))
+			((eq fn 'cadr) (cadar lae))
 			((eq fn 'nth) (nth (car lae) (cadr lae)))
 			((eq fn 'cons) (cons (car lae) (cadr lae)))
 			((eq fn 'list) lae)
@@ -75,6 +76,13 @@
 				)
 			)
 			((eq fn 'reduce) (reduce (lambda (x y) (aplicar (car lae) (list x y) amb)) (cadr lae)))
+			;While
+			((eq fn 'while)
+				(if (aplicar (car lae) (cddr lae) amb)
+					(aplicar 'while (list (car lae) (cadr lae) (aplicar (cadr lae) (cddr lae) amb)) amb)
+					(caddr lae)
+				)
+			)
 			;Funciones definidas en el ambiente
 			(T (aplicar (buscar fn amb) lae amb))
 		)
@@ -142,3 +150,10 @@
 ; (print (evaluar '(mapcar 'cons '(a b c) '(1 2 3)) nil))
 ; (print (evaluar '(mapcar 'list '(a b c) '(1 2 3) '(4 5 6)) nil))
 ; (print (evaluar '(mapcar 'suma '(1 2 3) '(4 5 6)) '(suma (lambda (x y) (+ x y)))))
+; (print (evaluar '(car (car (car (car '((((((1)))))))))) nil))
+
+(print (evaluar '(while (lambda(x)(NoCero(car x)) ) 
+		  		(lambda(x) (list (Restar1 (car x)) (* (car x) (cadr x)) ))
+		 		(car '( (5 1) 8 7)))
+		 		'(NoCero (lambda(x)(not(eq x 0))) Restar1 (lambda(n)(- n 1) ) )
+))
