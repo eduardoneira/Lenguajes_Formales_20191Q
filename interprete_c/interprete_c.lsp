@@ -46,8 +46,8 @@
 		((eq operador '>=) (if (>= operando1 operando2) 1 0))
 		((eq operador '==) (if (eq operando1 operando2) 1 0))
 		((eq operador '!=) (if (eq operando1 operando2) 0 1))
-		((eq operador '&&) (if (and operando1 operando2) 1 0))
-		((eq operador '||) (if (or operando1 operando2) 1 0))
+		((eq operador '&&) (if (and (eq operando1 1) (eq operando2 1)) 1 0))
+		((eq operador '||) (if (and (eq operando1 0) (eq operando2 0)) 0 1))
 	)
 )
 
