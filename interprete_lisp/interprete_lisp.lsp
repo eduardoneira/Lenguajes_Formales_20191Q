@@ -79,6 +79,7 @@
 			;While
 			((eq fn 'while)
 				(if (aplicar (car lae) (cddr lae) amb)
+					; (aplicar 'fn (reverse (cons (aplicar (cadr lae) (cddr lae) amb) (cdr (reverse lae)))) amb)
 					(aplicar 'while (list (car lae) (cadr lae) (aplicar (cadr lae) (cddr lae) amb)) amb)
 					(caddr lae)
 				)
