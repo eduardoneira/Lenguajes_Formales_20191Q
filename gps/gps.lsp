@@ -44,6 +44,10 @@
 	(length (reduce (lambda (x y) (if (< (length x) (length y)) x y)) caminos))
 )
 
+(defun maxima_distancia (caminos)
+	(length (reduce (lambda (x y) (if (> (length x) (length y)) x y)) caminos))
+)
+
 (defun seleccionar_caminos_minimos (caminos distancia)
 	(cond 
 		((null caminos) nil)
@@ -52,10 +56,19 @@
 	)
 )
 
+(defun seleccionar_caminos_maximos (caminos distancia)
+	(cond 
+		((null caminos) nil)
+		((< (length (car caminos)) distancia) (seleccionar_caminos_maximos (cdr caminos) distancia))
+		(T (cons (car caminos) (seleccionar_caminos_maximos (cdr caminos) distancia)))
+	)
+)
+
 (defun elegir_caminos (caminos)
 	(if (null caminos)
 		nil
-		(seleccionar_caminos_minimos caminos (minima_distancia caminos))
+		;(seleccionar_caminos_minimos caminos (minima_distancia caminos))
+		(list (car (seleccionar_caminos_minimos caminos (minima_distancia caminos))) (car (seleccionar_caminos_maximos caminos (maxima_distancia caminos))))
 	)
 )
 
@@ -119,7 +132,8 @@
 	(cond
 		((null (car caminos)) (format t "NO HAY CAMINOS POSIBLES.~%")) 
 		((eq 1 (length (car caminos))) (format t "YA TE ENCUENTRAS EN EL DESTINO.~%"))
-		(T (format t "HAY ~D CAMINOS POSIBLES.~%~%" (length caminos)) (car (mapcar (lambda (x) (formatear_y_escribir_camino x diccionario)) caminos)))
+		; (T (format t "HAY ~D CAMINOS POSIBLES.~%~%" (length caminos)) (car (mapcar (lambda (x) (formatear_y_escribir_camino x diccionario)) caminos)))
+		(T (format t "A CONTINUACION SE ENCUENTRAN UN CAMINO MINIMO POSIBLE Y UN CAMINO MAXIMO POSIBLE:~%~%" ) (car (mapcar (lambda (x) (formatear_y_escribir_camino x diccionario)) caminos)))
 	) 
 )
 
@@ -149,28 +163,28 @@
 )
 
 ; PRUEBAS
-; (setq grafo '((a (b f)) (b (a c)) (c (b d)) (d (c n e)) (e (d)) (f (g))(g (h)) (h (i l)) (i (m j)) (j (k)) (k (o))(l (b f)) (m (l c)) (n (j m)) (o (e n)) (p nil)))
+(setq grafo '((a (b f)) (b (a c)) (c (b d)) (d (c n e)) (e (d)) (f (g))(g (h)) (h (i l)) (i (m j)) (j (k)) (k (o))(l (b f)) (m (l c)) (n (j m)) (o (e n)) (p nil)))
 
-; (setq diccionario '(
-; (a (PaseoColon Independencia))
-; (b (PaseoColon Chile))
-; (c (PaseoColon Mexico))
-; (d (PaseoColon Venezuela))
-; (e (PaseoColon Belgrano))
-; (f (Independencia Balcarce))
-; (g (Independencia Defensa))
-; (h (Defensa Chile))
-; (i (Defensa Mexico))
-; (j (Defensa Venezuela))
-; (k (Defensa Belgrano))
-; (l (Balcarce Chile))
-; (m (Balcarce Mexico))
-; (n (Balcarce Venezuela))
-; (o (Balcarce Belgrano))
-; (p (calle separada))
-; ) )
+(setq diccionario '(
+(a (PaseoColon Independencia))
+(b (PaseoColon Chile))
+(c (PaseoColon Mexico))
+(d (PaseoColon Venezuela))
+(e (PaseoColon Belgrano))
+(f (Independencia Balcarce))
+(g (Independencia Defensa))
+(h (Defensa Chile))
+(i (Defensa Mexico))
+(j (Defensa Venezuela))
+(k (Defensa Belgrano))
+(l (Balcarce Chile))
+(m (Balcarce Mexico))
+(n (Balcarce Venezuela))
+(o (Balcarce Belgrano))
+(p (calle separada))
+) )
 
-; (GPS '(PaseoColon Independencia) '(Balcarce Belgrano) grafo diccionario)
+(GPS '(PaseoColon Independencia) '(Balcarce Belgrano) grafo diccionario)
 
 ; (GPS '(PaseoColon Independencia) '(Independencia PaseoColon) grafo diccionario)
 
