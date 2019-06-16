@@ -18,6 +18,17 @@
     (append (eliminar_de_mem nombre mem) (list nombre valor))
 )
 
+(defun variables (mem)
+    (if (null mem) 
+        nil
+        (cons (car mem) (variables (cddr mem)))
+    )
+)
+
+(defun palabras_reservadas ()
+    '(if while printf scanf else ++ -- += -= *= /= %= = + - * / % && || ! == != <= < > >=)
+)
+
 (defun es_operador (expr)
     (pertenece expr '(+ - * / %  && || ! == != <= < > >=))
 )
@@ -131,22 +142,29 @@
     )
 )
 
+(defun todas_las_variables_validas (prg palabras_validas)
+    (cond
+        ((null prg) T)
+        ((atom prg) (or (pertenece prg palabras_validas) (stringp prg) (numberp prg)))
+        (T (reduce (lambda (x y) (and x y)) (mapcar (lambda (x) (todas_las_variables_validas x palabras_validas)) prg)))
+    )
+)
+
 (defun run (prg ent &optional (mem nil))
-    (if (null prg) 
-        "NO HAY PROGRAMA"
-        (if (eq (caar prg) 'int)
-            (run (cdr prg) ent (asigvar (cdar prg) mem))
-            (if (eq (caar prg) 'main)
-                (ejec (cadar prg) ent mem)
-                "ERROR - NO HAY MAIN"
-            )
+    (cond 
+        ((null prg) '(ERROR_NO_HAY_PROGRAMA))
+        ((eq (caar prg) 'int) (run (cdr prg) ent (asigvar (cdar prg) mem)))
+        ((eq (caar prg) 'main) (if (todas_las_variables_validas (cadar prg) (append (palabras_reservadas) (variables mem)))
+                                   (ejec (cadar prg) ent mem)
+                                   '(ERROR_VARIABLE_NO_DECLARADA)
+                               )
         )
+        (T '(ERROR_INSTRUCCION_DESCONOCIDA))
     )
 )
 
 ; PRUEBAS
 ; Factorial de 5 - FUNCIONA
-;
 ; (print (run '( (int n fact = 1)
 ;                 (main (
 ;                     (scanf n)
@@ -169,7 +187,6 @@
 ; )
 
 ; Printf Basico - FUNCIONA
-;
 ; (print (RUN '( (int a = 2 b = 3)
 ;                (main (
 ;                       (printf a)
@@ -180,14 +197,16 @@
 ;         )
 ; )
 
-; Variable no declarada - NO FUNCIONA
-;
-(print (RUN '( (int z = 2)
-(main (
-(printf b)
-)
-)
-) () ) )
+; Variable no declarada - FUNCIONA
+; (print (RUN '( (int z = 2)
+;                (main (
+;                         (printf b)
+;                      )
+;                )
+;              ) 
+;             () 
+;         )
+; )
 
 ; Prueba no devuelve nada - FUNCIONA
 ; (print (RUN '( (int a = 6)
@@ -275,3 +294,59 @@
 ;             '(700 100) 
 ;         )
 ; )
+
+;Variable no declarada complejo - FUNCIONA
+; (print (RUN '( (int x y p = 10)
+;                (int r)
+;                (main ( 
+;                         (x = p + 10)
+;                         (p ++)
+;                         (++ x)
+;                         (x *= p - 4)
+;                         (if (x < p) ( 
+;                                         (printf x + p)
+;                                         (scanf y)
+;                                     )
+;                          else ( 
+;                                 (x = b * 6)
+;                                 (printf p * p)
+;                               )
+;                         )
+;                         (while (x > p * 10) (
+;                                                (printf x + p)
+;                                                (scanf y)
+;                                                (printf y)
+;                                                (x -= y)
+;                                             )
+;                         )
+;                      )
+;                )
+;             ) 
+;             '(700 100) 
+;         )
+; )(print (run '( (int n fact = 1)
+;                 (main (
+;                     (scanf n)
+;                     (if (n < 0 )
+;                         ((printf "no existe fact de nro negativo" ))
+;                         else (
+;                             (while (n > 1) ( 
+;                                 (fact = fact * n)
+;                                 (n -- )
+;                                 )
+;                             )
+;                             (printf fact)
+;                             )
+;                     )
+;                 )
+;                 )
+;             )
+;             '(5)
+;         )
+; )
+
+; Error programa vacio - FUNCIONA
+; (print (run nil nil))
+
+; Error instruccion desconocida - FUNCIONA
+; (print (run '((int n = 0) (algo)) nil))
