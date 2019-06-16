@@ -264,7 +264,7 @@
 ;         )
 ; )
 
-;While - FUNCIONA
+; While - FUNCIONA
 ; (print (RUN '( (int x y p = 10)
 ;                (int r)
 ;                (main ( 
@@ -295,7 +295,7 @@
 ;         )
 ; )
 
-;Variable no declarada complejo - FUNCIONA
+; Variable no declarada complejo - FUNCIONA
 ; (print (RUN '( (int x y p = 10)
 ;                (int r)
 ;                (main ( 
