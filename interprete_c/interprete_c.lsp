@@ -74,6 +74,7 @@
 (defun asigvar (asigs mem)
     (cond
         ((null asigs) mem)
+        ((eq (car asigs) 'function) (cons (cadr asigs) (cons (cddr asigs) mem)))
         ((eq (cadr asigs) '=) (asigvar (cdddr asigs) (cons (car asigs) (cons (caddr asigs) mem))))
         (T (asigvar (cdr asigs) (cons (car asigs) (cons 0 mem))))
     )
@@ -89,16 +90,54 @@
     )
 )
 
+(defun funciones (mem)
+    (cond
+        ((null mem) nil)
+        ((listp (cadr mem)) (cons (car mem) (funciones (cddr mem))))
+        (T (funciones (cddr mem)))
+    )
+)
+
+; ampliar_mem (X Y Z) (1 2 3) nil => (x 1 y 2 z 3)
+(defun ampliar_mem (parametros valores mem)
+    (if (null parametros) 
+        mem
+        (ampliar_mem (cdr parametros) (cdr valores) (asignar (car parametros) (car valores) mem))
+    )
+)
+
+; ejecutar (restar 2) (X 2)
+(defun ejecutar_funcion (funcion mem)
+    (car (ejec (cadr (buscar (car funcion) mem)) 
+            nil 
+            (ampliar_mem (car (buscar (car funcion) mem)) (mapcar (lambda (x) (valor x mem)) (cdr funcion)) mem)
+        )
+    )
+)
+
+; valor (x + 1) (x 2) nil nil
+; valor x (x 2) => 2
+; valor (+ 1) (x 2) nil (2)
+; valor (1) (x 2) (+) (2)
+; valor 1 (x 2) => 1
+; valor nil (x 2) (+) (1 2)
+; valor nil (x 2) nil (3) => 3
+
+;valor ((restar 2)) (RESTAR ((X) ((X -= 1) (RETURN X))) FACT 1 N 0) 
 (defun valor (expr mem &optional (operadores nil) (operandos nil))
     ; (print (list 'VALOR expr mem operadores operandos))
-    (if (and (atom expr) (not (null expr))) (if (numberp expr) expr (buscar expr mem))
+    (if (and (atom expr) (not (null expr))) 
+        (if (numberp expr) expr (buscar expr mem))
         (if (null expr) 
             (if (null operadores) 
                 (car operandos)
                 (valor expr mem (cdr operadores) (cons (operar (car operadores) (cadr operandos) (car operandos)) (cddr operandos)))
             )
             (if (listp (car expr))
-                (valor (cdr expr) mem operadores (cons (valor (car expr) mem) operandos))
+                (if (pertenece (caar expr) (funciones mem))
+                    (valor (cdr expr) mem operadores (cons (ejecutar_funcion (car expr) mem) operandos))
+                    (valor (cdr expr) mem operadores (cons (valor (car expr) mem) operandos))
+                )
                 (if (es_operador (car expr))
                     (if (null operadores)
                         (valor (cdr expr) mem (list (car expr)) operandos)
@@ -138,6 +177,8 @@
                                         (ejec (append (nth 2 (car prg)) prg) ent mem sal)
                                      )
             )
+            ((eq (caar prg) 'return) (ejec nil ent mem (list (valor (cdar prg) mem))))
+            (T (ejec (cdr prg) ent mem sal))
         )
     )
 )
@@ -154,6 +195,7 @@
     (cond 
         ((null prg) '(ERROR_NO_HAY_PROGRAMA))
         ((eq (caar prg) 'int) (run (cdr prg) ent (asigvar (cdar prg) mem)))
+        ((eq (caar prg) 'function) (run (cdr prg) ent (asigvar (car prg) mem)))
         ((eq (caar prg) 'main) (if (todas_las_variables_validas (cadar prg) (append (palabras_reservadas) (variables mem)))
                                    (ejec (cadar prg) ent mem)
                                    '(ERROR_VARIABLE_NO_DECLARADA)
@@ -165,26 +207,28 @@
 
 ; PRUEBAS
 ; Factorial de 5 - FUNCIONA
-; (print (run '( (int n fact = 1)
-;                 (main (
-;                     (scanf n)
-;                     (if (n < 0 )
-;                         ((printf "no existe fact de nro negativo" ))
-;                         else (
-;                             (while (n > 1) ( 
-;                                 (fact = fact * n)
-;                                 (n -- )
-;                                 )
-;                             )
-;                             (printf fact)
-;                             )
-;                     )
-;                 )
-;                 )
-;             )
-;             '(5)
-;         )
-; )
+(print (run '( (int n fact = 1)
+                (function restar (x) ((x -= 1) (return x)))
+                (main (
+                    (scanf n)
+                    (printf (restar 2))
+                    (if (n < 0 )
+                        ((printf "no existe fact de nro negativo" ))
+                        else (
+                            (while (n > 1) ( 
+                                (fact = fact * n)
+                                (n = (restar n))
+                                )
+                            )
+                            (printf fact)
+                            )
+                    )
+                )
+                )
+            )
+            '(10)
+        )
+)
 
 ; Printf Basico - FUNCIONA
 ; (print (RUN '( (int a = 2 b = 3)
@@ -323,25 +367,6 @@
 ;                )
 ;             ) 
 ;             '(700 100) 
-;         )
-; )(print (run '( (int n fact = 1)
-;                 (main (
-;                     (scanf n)
-;                     (if (n < 0 )
-;                         ((printf "no existe fact de nro negativo" ))
-;                         else (
-;                             (while (n > 1) ( 
-;                                 (fact = fact * n)
-;                                 (n -- )
-;                                 )
-;                             )
-;                             (printf fact)
-;                             )
-;                     )
-;                 )
-;                 )
-;             )
-;             '(5)
 ;         )
 ; )
 
